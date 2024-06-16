@@ -1,7 +1,7 @@
 "use client"
 import { useLocalStorage } from "usehooks-ts";
 import { KeyboardEvent, useEffect, useState } from "react";
-import { API_KEY, Toast, VERSIONS_STAMP } from "../types";
+import { API_KEY, MessageType, Toast, VERSIONS_STAMP } from "../types";
 import Message from "./message";
 
 
@@ -26,11 +26,11 @@ const Sync = (props: Props): JSX.Element => {
     }, []);
 
     const error = (message: string) => {
-        setToast({ message, messageType: 'ERROR' });
+        setToast({ message, messageType: MessageType.ERROR });
     }
 
     const info = (message: string) => {
-        setToast({ message, messageType: 'INFO' });
+        setToast({ message, messageType: MessageType.INFO });
     }
 
     const getData = async () => {

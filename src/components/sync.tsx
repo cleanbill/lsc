@@ -1,30 +1,21 @@
 "use client"
 import { useLocalStorage } from "usehooks-ts";
 import { KeyboardEvent, useEffect, useState } from "react";
-import { ToastContainer, ToastPosition, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { API_KEY, VERSIONS_STAMP } from "../types";
+import { API_KEY, Toast, VERSIONS_STAMP } from "../types";
+import Message from "./message";
+
 
 type Props = {
     overwriteData: Function;
     data: any;
 }
 
-const toastErrorOptions = {
-    position: "top-center" as ToastPosition,
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light"
-};
 
-const Sync = (props: Props) => {
+const Sync = (props: Props): JSX.Element => {
 
     const [mounted, setMounted] = useState(false);
     const [tokenTyped, setTokenTyped] = useState(false);
+    const [toast, setToast] = useState({} as Toast);
     const [versionstamp, setVersionstamp] = useLocalStorage(VERSIONS_STAMP, 0);
     const [token, setToken] = useLocalStorage(API_KEY, "munch");
 
@@ -34,6 +25,14 @@ const Sync = (props: Props) => {
         setMounted(true);
     }, []);
 
+    const error = (message: string) => {
+        setToast({ message, messageType: 'ERROR' });
+    }
+
+    const info = (message: string) => {
+        setToast({ message, messageType: 'INFO' });
+    }
+
     const getData = async () => {
         const URL = 'sync/';
         const requestOptions = {
@@ -42,18 +41,18 @@ const Sync = (props: Props) => {
         };
         const response = await fetch(URL, requestOptions);
         if (response.status != 200) {
-            toast.error('Failed to Sync data', toastErrorOptions);
+            error('Failed to Sync data');
             return;
         }
         try {
             const data = await response.json();
             if (!data) {
-                toast.error('Sync has no data?', toastErrorOptions);
+                error('Sync has no data?');
             }
             return data;
         } catch (err) {
             console.error('Cannot parse data', err);
-            toast("Sync failed - parsing problem");
+            error("Sync failed - parsing problem");
         }
     }
 
@@ -66,7 +65,7 @@ const Sync = (props: Props) => {
         if (data) {
             props.overwriteData(data);
             setVersionstamp(data.versionstamp);
-            toast.info("Sync'd up!");
+            info("Sync'd up!");
         }
         release();
     }
@@ -77,7 +76,7 @@ const Sync = (props: Props) => {
         }
         const data = await getData();
         if (data.versionstamp != versionstamp) {
-            toast.error('Cannot Send - out of sync', toastErrorOptions);
+            error('Cannot Send - out of sync');
             throw Error("Out of sync");
         }
     }
@@ -101,7 +100,7 @@ const Sync = (props: Props) => {
         };
         const response = await fetch(URL, requestOptions);
         if (response.status != 200) {
-            toast.error('Cannot Send - Server Error: ' + response.status, toastErrorOptions);
+            error('Cannot Send - Server Error: ' + response.status);
             release();
             return;
         }
@@ -109,10 +108,10 @@ const Sync = (props: Props) => {
             const backData = await response.json();
             const vs = backData.versionstamp;
             setVersionstamp(vs);
-            toast.info("Sync sent and saved");
+            info("Sync sent and saved");
             console.log(backData)
         } catch (er) {
-            toast.error('Cannot Send - error', toastErrorOptions);
+            error('Cannot Send - error');
             console.error(er);
             console.error(response);
         }
@@ -151,6 +150,7 @@ const Sync = (props: Props) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key == 'Enter') {
             updateToken();
+
         }
         const el = document.getElementById("sync-token-input") as HTMLInputElement;
         setTokenTyped(el.value?.length > 0);
@@ -164,7 +164,7 @@ const Sync = (props: Props) => {
             </div>}
 
             {mounted && hasToken && <div>
-                < ToastContainer />
+                <Message toast={toast}></Message>
                 <div data-testid='sync-butt-grid' id='sync-butt-grid' className='grid grid-cols-3'>
                     <button data-testid="sync-load-butt" id="sync-load-butt" className="w-10 text-red-800 bg-sky-200  hover:bg-blue-200 focus:outline-none focus:ring hover:pr-0 focus:ring-yellow-300 text-xs rounded-xl h-6 float-start" onClick={load} >Sync</button>
                     <button data-testid="sync-clear-butt" id="sync-clear-butt" className="w-10 text-red-800 bg-sky-200  hover:bg-blue-200 focus:outline-none focus:ring hover:pr-0 focus:ring-yellow-300 text-xs rounded-xl h-6 place-self-center" onClick={clearToken} >Clear</button>

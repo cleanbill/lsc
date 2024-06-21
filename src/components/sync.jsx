@@ -1,21 +1,35 @@
 "use client"
 import { useLocalStorage } from "usehooks-ts";
-import { KeyboardEvent, useEffect, useState } from "react";
-import { API_KEY, MessageType, Toast, VERSIONS_STAMP } from "../types";
+import { useEffect, useState } from "react";
+import { API_KEY, MessageType, VERSIONS_STAMP } from "../constants";
 import Message from "./message";
 
+/**
+ * @typedef {Object} Props
+ * @property {function} overwriteData - A function used to overwrite the data.
+ * @property {*} data - The data to be displayed or overwritten.
+ */
 
-type Props = {
-    overwriteData: Function;
-    data: any;
-}
 
 
-const Sync = (props: Props): JSX.Element => {
+/**
+ * @typedef {Object} Toast
+ * @property {string} message - The message to be displayed in the toast. (Optional)
+ * @property {MessageType} messageType - The type of toast (e.g., "success", "error", "info"). (Optional)
+ * */
+
+
+/**
+ * A component that synchronizes data.
+ * 
+ * @param {Props} props - The component properties.
+ * @returns {JSX.Element | null} - The JSX element to be rendered, or null if not rendering.
+ */
+const Sync = (props) => {
 
     const [mounted, setMounted] = useState(false);
     const [tokenTyped, setTokenTyped] = useState(false);
-    const [toast, setToast] = useState({} as Toast);
+    const [toast, setToast] = useState({});
     const [versionstamp, setVersionstamp] = useLocalStorage(VERSIONS_STAMP, 0);
     const [token, setToken] = useLocalStorage(API_KEY, "munch");
 
@@ -25,12 +39,18 @@ const Sync = (props: Props): JSX.Element => {
         setMounted(true);
     }, []);
 
-    const error = (message: string) => {
-        setToast({ message, messageType: MessageType.ERROR });
-    }
+    /**
+     * @param {message} string - Message text
+     */
+    const error = (message) => {
+            setToast({ message, messageType: MessageType.ERROR });
+        }
 
-    const info = (message: string) => {
-        setToast({ message, messageType: MessageType.INFO });
+    /**
+     * @param {message} string - Message text
+     */
+    const info = (message) => {
+            setToast({ message, messageType: MessageType.INFO });
     }
 
     const getData = async () => {
@@ -125,34 +145,38 @@ const Sync = (props: Props): JSX.Element => {
         if (!tokenTyped) {
             return;
         }
-        const el = document.getElementById("sync-token-input") as HTMLInputElement;
+        const el = document.getElementById("sync-token-input");
         setToken(el.value);
     }
 
     const clearToken = () => {
         setToken("munch");
+        setTokenTyped(false);
     }
 
     const block = () => {
-        (document.getElementById("sync-load-butt") as HTMLButtonElement).disabled = true;
-        (document.getElementById("sync-save-butt") as HTMLButtonElement).disabled = true;
-        (document.getElementById("sync-clear-butt") as HTMLButtonElement).disabled = true;
+        (document.getElementById("sync-load-butt")).disabled = true;
+        (document.getElementById("sync-save-butt")).disabled = true;
+        (document.getElementById("sync-clear-butt")).disabled = true;
         blocked = true;
     }
 
     const release = () => {
-        (document.getElementById("sync-load-butt") as HTMLButtonElement).disabled = false;
-        (document.getElementById("sync-save-butt") as HTMLButtonElement).disabled = false;
-        (document.getElementById("sync-clear-butt") as HTMLButtonElement).disabled = false;
+        (document.getElementById("sync-load-butt")).disabled = false;
+        (document.getElementById("sync-save-butt")).disabled = false;
+        (document.getElementById("sync-clear-butt")).disabled = false;
         blocked = false;
     }
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    /**
+     * @param {e} KeyboardEvent<HTMLInputElement> 
+     * */
+    const handleKeyDown = (e) => {
         if (e.key == 'Enter') {
             updateToken();
 
         }
-        const el = document.getElementById("sync-token-input") as HTMLInputElement;
+        const el = document.getElementById("sync-token-input");
         setTokenTyped(el.value?.length > 0);
     }
 
@@ -160,7 +184,7 @@ const Sync = (props: Props): JSX.Element => {
         <div data-testid="sync-main" id='main-sync' className="m-3">
             {mounted && noToken && <div className="text-center">
                 <input data-testid="sync-token-input" id='sync-token-input' autoFocus={true} onKeyUp={(e) => handleKeyDown(e)} className="w-4/5 bg-sky-200 text-left p-2 rounded-lg" placeholder="Whats the token"></input>
-                {tokenTyped && <button data-testid="sync-token-post-butt" className="ml-2 w-10 text-black bg-sky-200 hover:bg-blue-200 focus:outline-none focus:ring hover:pr-0 focus:ring-yellow-300 text-xs rounded-xl h-8" disabled={tokenTyped} onClick={updateToken}>Post</button>}
+                {tokenTyped && <button data-testid="sync-token-post-butt" className="ml-2 w-10 text-black bg-sky-200 hover:bg-blue-200 focus:outline-none focus:ring hover:pr-0 focus:ring-yellow-300 text-xs rounded-xl h-8" onClick={updateToken}>Post</button>}
             </div>}
 
             {mounted && hasToken && <div>

@@ -14,7 +14,7 @@ describe('Sync comp should ', () => {
         const data = {};
 
         render(<Sync overwriteData={overwriteData} data={data} />)
-        const tokenInput = screen.getByTestId('sync-token-input') as HTMLInputElement;
+        const tokenInput = screen.getByTestId('sync-token-input') ;
         const missingInputButtons = screen.queryByText("Post");
         expect(missingInputButtons).toBeNull(); // Not on page yet....
 

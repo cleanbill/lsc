@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   build: {
     lib: {
-      entry: path.resolve("src", 'components/index.ts'),
+      entry: path.resolve("src", 'sync.js'),
       name: 'lsc',
       fileName: (format) => `lsc.${format}.js`
     },

@@ -1,5 +1,5 @@
 {
     "name": "@cill/lsc",
-    "version": "1.0.1",
-    "exports": "./src/components/sync.jsx"
+    "version": "1.0.3",
+    "exports": "./src/sync.js"
 }

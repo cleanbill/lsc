@@ -1,4 +1,4 @@
-# React - Localstorage Sync Component
+# Web component for Localstorage sync
 
 ## Next JS
 
@@ -21,4 +21,46 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+```
+
+- In page for the component, setup the types...
+
+```js
+import { } from "./sync.js"
+
+interface SyncLocalWebComponent extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
+  data?: MunchData; // Where munch data is the type of data that needs to be stored in local storage
+}
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'data-sync': SyncLocalWebComponent;
+    }
+  }
+}
+
+...
+
+<data-sync data={{ dinners, mealIngredients, selectedMeal, selectedDateIndex, ingredients }}></data-sync>
+
+...
+```
+
+- Listen for the data sync event
+
+```js
+const [MunchData, setMunchData] = useState({ dinners, mealIngredients, selectedMeal, selectedDateIndex, ingredients }); // Example data
+
+interface OverwriteDataCustomEvent {
+  data: MunchData;
+}
+
+const handleNewData = (e: Event) => {
+  const ce = e as CustomEvent<OverwriteDataCustomEvent>; // Type madness
+  setMunchData(ce.detail.data); // Handle the new data and set some state...
+}
+useEffect(() => {
+  document.addEventListener('overwriteData', handleNewData);
+  return () => document.removeEventListener('overwriteData', handleNewData);
+}, []);
 ```

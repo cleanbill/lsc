@@ -311,7 +311,7 @@ class SyncComponent extends HTMLElement {
         }
         this.block();
         this.checkVersion();
-        const URL = 'sync/';
+        const URL = this.getAttribute("url") || 'local-sync/';
         const token = window.localStorage.getItem("API_KEY");
         const data = {
             token,

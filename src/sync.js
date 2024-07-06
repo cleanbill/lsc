@@ -234,7 +234,7 @@ class SyncComponent extends HTMLElement {
 
     async getData() {
         const token = window.localStorage.getItem("API_KEY");
-        const URL = 'sync/';
+        const URL = this.getAttribute("url") || 'local-sync/';
         const requestOptions = {
             method: "GET",
             headers: { "Content-Type": "application/json", "X-API-KEY": token },
@@ -345,7 +345,7 @@ class SyncComponent extends HTMLElement {
             return;
         }
         const data = await this.getData();
-        if (data.versionstamp != versionstamp) {
+        if (!data?.versionstamp || data.versionstamp != versionstamp) {
             toast('Cannot Send - out of sync');
             throw Error("Out of sync");
         }

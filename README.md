@@ -26,7 +26,7 @@ module.exports = nextConfig;
 - In page for the component, setup the types...
 
 ```js
-import { } from "./sync.js"
+import '@jsr/cill__lsc'
 
 interface SyncLocalWebComponent extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
   data?: MunchData; // Where munch data is the type of data that needs to be stored in local storage

@@ -309,7 +309,7 @@ class SyncComponent extends HTMLElement {
         if (this.blocked) {
             console.warn('Re-click save - blocked');
         }
-        if (this.badVersion()) {
+        if (await this.badVersion()) {
             return;
         }
         this.block();
@@ -344,7 +344,8 @@ class SyncComponent extends HTMLElement {
     async badVersion() {
         const versionstamp = window.localStorage.getItem("versions-stamp");
         if (!versionstamp) {
-            return false;
+            this.toast('Cannot Send - sync first (no version)');
+            return true;
         }
         const data = await this.getData();
         if (!data?.versionstamp) {

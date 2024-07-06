@@ -313,17 +313,17 @@ class SyncComponent extends HTMLElement {
         this.checkVersion();
         const URL = this.getAttribute("url") || 'local-sync/';
         const token = window.localStorage.getItem("API_KEY");
-        const data = {
-            token,
-            data: this.getAttribute("data")
-        };
-
-        const requestOptions = {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-API-KEY": token },
-            body: JSON.stringify(data),
-        };
         try {
+            const data = {
+                token,
+                data: JSON.stringify(this.getAttribute("data"))
+            };
+
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-API-KEY": token },
+                body: data,
+            };
             const response = await fetch(URL, requestOptions);
             const backData = await response.json();
             const vs = backData.versionstamp;
@@ -346,7 +346,7 @@ class SyncComponent extends HTMLElement {
         }
         const data = await this.getData();
         if (!data?.versionstamp || data.versionstamp != versionstamp) {
-            toast('Cannot Send - out of sync');
+            this.toast('Cannot Send - out of sync');
             throw Error("Out of sync");
         }
     }

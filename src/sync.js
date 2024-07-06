@@ -309,14 +309,16 @@ class SyncComponent extends HTMLElement {
         if (this.blocked) {
             console.warn('Re-click save - blocked');
         }
+        if (this.badVersion()) {
+            return;
+        }
         this.block();
-        this.checkVersion();
         const URL = this.getAttribute("url") || 'local-sync/';
         const token = window.localStorage.getItem("API_KEY");
         try {
             const data = {
                 token,
-                data: JSON.stringify(this.getAttribute("data"))
+                data: this.getAttribute("data")
             };
 
             const requestOptions = {
@@ -339,16 +341,21 @@ class SyncComponent extends HTMLElement {
 
     }
 
-    async checkVersion() {
+    async badVersion() {
         const versionstamp = window.localStorage.getItem("versions-stamp");
         if (!versionstamp) {
-            return;
+            return false;
         }
         const data = await this.getData();
-        if (!data?.versionstamp || data.versionstamp != versionstamp) {
-            this.toast('Cannot Send - out of sync');
-            throw Error("Out of sync");
+        if (!data?.versionstamp) {
+            this.toast('Cannot Send - no version returned');
+            return true;
         }
+        if (data.versionstamp != versionstamp) {
+            this.toast('Cannot Send - out of sync');
+            return true;
+        }
+        return false;
     }
 
     updateToken(newToken) {

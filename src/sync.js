@@ -342,11 +342,7 @@ class SyncComponent extends HTMLElement {
     }
 
     async badVersion() {
-        const versionstamp = window.localStorage.getItem("versions-stamp");
-        if (!versionstamp) {
-            this.toast('Cannot Send - sync first (no version)');
-            return true;
-        }
+        const versionstamp = window.localStorage.getItem("versions-stamp") || '00000000000000000000';
         const data = await this.getData();
         if (!data?.versionstamp) {
             this.toast('Cannot Send - no version returned');

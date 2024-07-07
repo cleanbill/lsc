@@ -318,7 +318,7 @@ class SyncComponent extends HTMLElement {
         try {
             const data = {
                 token,
-                data: this.getAttribute("data")
+                data: JSON.parse(this.getAttribute("data"))
             };
 
             const requestOptions = {

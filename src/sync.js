@@ -324,7 +324,7 @@ class SyncComponent extends HTMLElement {
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "X-API-KEY": token },
-                body: data,
+                body: JSON.stringify(data),
             };
             const response = await fetch(URL, requestOptions);
             const backData = await response.json();
